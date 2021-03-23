@@ -21,7 +21,7 @@ def start_camera():
     #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     # 设置地址与端口，如果是接收任意ip对本服务器的连接，地址栏可空，但端口必须设置
-    server_address = ('', 12306)
+    server_address = ('', 12305)
     sock.bind(server_address)  # 将Socket（套接字）绑定到地址
 
     try:
