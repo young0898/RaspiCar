@@ -1,7 +1,6 @@
 import cv2
-import numpy
 import socket
-import struct
+
 
 def start_camera_service():
     #server_address = ('192.168.3.100', 12305)
@@ -14,18 +13,18 @@ def start_camera_service():
     camera = cv2.VideoCapture(0) #VideoCapture对象，可获取摄像头设备的数据
     #camera.set(cv2.CAP_PROP_FRAME_WIDTH,960)
     #camera.set(cv2.CAP_PROP_FRAME_HEIGHT,720)
-    camera.set(cv2.CAP_PROP_POS_FRAMES,40)
+    #camera.set(cv2.CAP_PROP_POS_FRAMES, 30)
 
-
+    print('sent the frame')
     while camera.isOpened():
         success, frame = camera.read()
-        result, imgencode = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY,50])  #编码
+        result, imgencode = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 50])  #编码
         try:
             server.sendall(imgencode) #发送视频帧数据
         except Exception as e:
             print(e)
             break
-        print('have sent one frame')
+
     camera.release()
     server.close()
 

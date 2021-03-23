@@ -44,12 +44,12 @@ def display_camera_frame():
         frame = frame[::-1, ::-1, :]  #翻转图片
         cv2.imshow("test3", frame)
 
-        key = cv2.waitKey(1)
-        if key == 27:  # 通过esc键退出摄像
-            cv2.destroyAllWindows()
+        if cv2.waitKey(1) == 27:  # 按下“ESC”退出
             break
         time_end = time.time() * 1000
         print(round(time_end - time_start))
+
+    cv2.destroyAllWindows()
     s.close()
 
 if __name__ =='__main__':

@@ -13,8 +13,18 @@ def display_camera_frame():
     server.bind(server_address)
     print('now waiting for frames...')
 
+    lastTime = 0.0
+    lastFrameCount = 0
     while True:
-        s_time = time.time() * 1000
+        if lastTime == 0:
+            lastTime = time.time()
+        lastFrameCount += 1
+        nowtime = time.time()
+        if nowtime - lastTime > 1:
+            fps = round((lastFrameCount / (nowtime - lastTime)), 2)
+            print(fps, lastFrameCount)
+            lastTime = nowtime
+            lastFrameCount = 0
 
         data, address = server.recvfrom(buffSize) #接收编码图像数据
         data = numpy.array(bytearray(data))  #格式转换
@@ -22,11 +32,9 @@ def display_camera_frame():
         imgdecode = imgdecode[::-1, ::-1, :]  #翻转图像
         cv2.imshow('test5',imgdecode) #窗口显示
 
-        if cv2.waitKey(1)==27: #按下“ESC”退出
+        if cv2.waitKey(1) == 27: #按下“ESC”退出
             break
 
-        d_time = time.time() * 1000
-        print(round(d_time - s_time))
     server.close()
     cv2.destroyAllWindows()
 
