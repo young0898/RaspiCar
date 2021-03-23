@@ -30,7 +30,7 @@ def display_camera_frame():
         data = numpy.array(bytearray(data))  #格式转换
         imgdecode = cv2.imdecode(data,1)  #解码
         imgdecode = imgdecode[::-1, ::-1, :]  #翻转图像
-        cv2.imshow('test5',imgdecode) #窗口显示
+        cv2.imshow('video',imgdecode) #窗口显示
 
         if cv2.waitKey(1) == 27: #按下“ESC”退出
             break

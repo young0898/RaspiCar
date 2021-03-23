@@ -42,7 +42,7 @@ def display_camera_frame():
         img_array = np.asarray(bytearray(data), dtype = np.uint8)
         frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)  #解码图片
         frame = frame[::-1, ::-1, :]  #翻转图片
-        cv2.imshow("test3", frame)
+        cv2.imshow("video", frame)
 
         if cv2.waitKey(1) == 27:  # 按下“ESC”退出
             break
