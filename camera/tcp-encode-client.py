@@ -4,8 +4,8 @@ import numpy as np
 import time
 
 def display_camera_frame():
-    sever_address = ('192.168.3.101', 12306)
-    #sever_address = ('192.168.31.204', 12306)
+    #sever_address = ('192.168.3.101', 12306)
+    sever_address = ('192.168.31.204', 12306)
     #sever_address = ('129.204.4.69', 12306)
 
     # socket.AF_INET用于服务器与服务器之间的网络通信
@@ -14,7 +14,7 @@ def display_camera_frame():
 
     print("Connect to server [%s:%d]" % (sever_address[0], sever_address[1]))
     try:
-        s.connect(('192.168.3.101', 12306))
+        s.connect(sever_address)
     except socket.error:
         print("Fail to connect to server")
         exit(0)
