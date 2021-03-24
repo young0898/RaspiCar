@@ -4,8 +4,8 @@ import numpy as np
 import time
 
 def display_camera_frame():
-    #sever_address = ('192.168.3.101', 12305)
-    sever_address = ('192.168.31.204', 12305)
+    sever_address = ('192.168.3.101', 12305)
+    #sever_address = ('192.168.31.204', 12305)
     #sever_address = ('129.204.4.69', 12305)
 
     # socket.AF_INET用于服务器与服务器之间的网络通信
@@ -21,8 +21,18 @@ def display_camera_frame():
  
     print("Connect success")
 
+    lastTime = 0.0
+    lastFrameCount = 0
     while True:
-        time_start = time.time() * 1000
+        if lastTime == 0:
+            lastTime = time.time()
+        lastFrameCount += 1
+        nowtime = time.time()
+        if nowtime - lastTime > 1:
+            fps = round((lastFrameCount / (nowtime - lastTime)))
+            print('FPS: '+ str(fps))
+            lastTime = nowtime
+            lastFrameCount = 0
 
         lStr = s.recv(4)
         if len(lStr) != 4:
@@ -46,8 +56,6 @@ def display_camera_frame():
 
         if cv2.waitKey(1) == 27:  # 按下“ESC”退出
             break
-        time_end = time.time() * 1000
-        print(round(time_end - time_start))
 
     cv2.destroyAllWindows()
     s.close()

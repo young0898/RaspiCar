@@ -3,8 +3,8 @@ import socket
 
 
 def start_camera_service():
-    #server_address = ('192.168.3.100', 12305)
-    server_address = ('192.168.31.61', 12305)
+    server_address = ('192.168.3.100', 12305)
+    #server_address = ('192.168.31.61', 12305)
 
     server=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)   #socket对象
     server.connect(server_address)

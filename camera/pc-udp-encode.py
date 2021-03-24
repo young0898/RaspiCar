@@ -6,7 +6,8 @@ import time
 
 
 def display_camera_frame():
-    server_address = ('192.168.31.61', 12305)
+    #server_address = ('192.168.31.61', 12305)
+    server_address = ('192.168.3.100', 12305)
     buffSize = 65535
 
     server = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) #创建socket对象
@@ -16,13 +17,14 @@ def display_camera_frame():
     lastTime = 0.0
     lastFrameCount = 0
     while True:
+        #s_time = time.time() * 1000
         if lastTime == 0:
             lastTime = time.time()
         lastFrameCount += 1
         nowtime = time.time()
         if nowtime - lastTime > 1:
             fps = round((lastFrameCount / (nowtime - lastTime)), 2)
-            print(fps, lastFrameCount)
+            print('FPS: '+ str(fps))
             lastTime = nowtime
             lastFrameCount = 0
 
