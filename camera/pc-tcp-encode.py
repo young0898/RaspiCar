@@ -4,8 +4,8 @@ import numpy as np
 import time
 
 def display_camera_frame():
-    sever_address = ('192.168.3.101', 12305)
-    #sever_address = ('192.168.31.204', 12305)
+    #sever_address = ('192.168.3.101', 12305)
+    sever_address = ('192.168.31.204', 12305)
     #sever_address = ('129.204.4.69', 12305)
 
     # socket.AF_INET用于服务器与服务器之间的网络通信
