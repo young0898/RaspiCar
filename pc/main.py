@@ -15,12 +15,11 @@ if __name__ =='__main__':
 
     time.sleep(1)   # 这里应该是异步回调，图省事先
 
+    usbControl = Usb_Control(wsc)
+    usbControl.start()
+
     ctrl = Ctrl(wsc)      #创建控制现场
     ctrl.restartCamera()  # 下发指令给树莓派启动摄像头
-
-    ping = Ping(wsc)    #创建ping对象
-    ping.start()        #循环下发ping测指令给树莓派
-    wsc.setPing(ping)   #将ping对象传递给wsc
 
     camera = Camera()
     camera.start()
@@ -28,8 +27,9 @@ if __name__ =='__main__':
     keyboardControl = Keyboard_Control(wsc)
     keyboardControl.start()
 
-    usbControl = Usb_Control(wsc)
-    usbControl.start()
+    ping = Ping(wsc)  # 创建ping对象
+    ping.start()  # 循环下发ping测指令给树莓派
+    wsc.setPing(ping)  # 将ping对象传递给wsc
 
     display = Display(camera, keyboardControl, ping)
     display.start()

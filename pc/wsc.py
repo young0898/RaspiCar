@@ -7,7 +7,7 @@ class WSC:
         self.ping = None
         @sio.event
         def connect():
-            print('connection established sussecc')
+            print('websocket connection established success')
             self.ready = 1
 
         @sio.event

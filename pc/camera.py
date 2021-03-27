@@ -53,7 +53,7 @@ class Camera(threading.Thread):
                     self.camera = None
                     time.sleep(1)
                     continue
-                print('connected camera successed!')
+                print('camera connection established success')
 
                 while self.isQuit == False:
                     if camera.isOpened():

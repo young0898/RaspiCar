@@ -14,7 +14,7 @@ class Usb_Control(threading.Thread):
             raise ValueError('Device not found')
         else:
             #print(self.dev)
-            print('connect usb success')
+            print('usbControl connection established success')
             self.dev.set_configuration()
 
     def run(self):
