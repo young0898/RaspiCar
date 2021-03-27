@@ -21,19 +21,14 @@ class Control_Car:
             new_diretion = direction
         self.duty = new_diretion / 180 * 10 + 2.5
         self.pwm.ChangeDutyCycle(self.duty)
-        print("direction =", new_diretion, "-> duty =", self.duty, '%')
+        #print("direction =", new_diretion, "-> duty =", self.duty, '%')
         #time.sleep(0.01)
 
     def set(self, data):
-        if data['left'] == 1 and data['right'] == 0:
-            self.pwm.ChangeDutyCycle(9)
-        elif data['right'] == 1 and data['left'] == 0 :
-            self.pwm.ChangeDutyCycle(5)
-        else:
-            self.pwm.ChangeDutyCycle(0)
-            
+        if 'direction' in data:
+            self.setDirection(data['direction'])
+
     def setRaw(self, data):
-        # if data['direction'] != 0 :
-        if 'direction' in data :
+        if 'direction' in data:
             self.setDirection(data['direction'])
     

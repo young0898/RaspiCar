@@ -25,7 +25,7 @@ def ctrlRaw(sid, data):
 
 @sio.event
 def ping(sid, data):
-    print('ping', data)
+    #print('ping', data)
     sio.emit('ping', data) #啥都不做，直接转发原data回去
 
 @sio.event
