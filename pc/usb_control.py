@@ -11,14 +11,15 @@ class Usb_Control(threading.Thread):
         self.last_direction = 90
         self.dev = usb.core.find(idVendor= 0x1781, idProduct= 0x0898)
         if self.dev is None:
-            raise ValueError('Device not found')
+            #raise ValueError('Device not found')
+            print('Device not found')
         else:
             #print(self.dev)
             print('usbControl connection established success')
             self.dev.set_configuration()
 
     def run(self):
-        while True:
+        while self.dev:
             try:
                 RCdata = self.dev.read(0x81, 8)
                 # print(data)
