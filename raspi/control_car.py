@@ -33,7 +33,7 @@ class Control_Car:
             self.pwm.ChangeDutyCycle(0)
             
     def setRaw(self, data):
-        # if data['pwm'] != 0 :
-        if 'pwm' in data :
-            self.setDirection(data['pwm'])
+        # if data['direction'] != 0 :
+        if 'direction' in data :
+            self.setDirection(data['direction'])
     
