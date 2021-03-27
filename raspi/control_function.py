@@ -1,8 +1,9 @@
 import os
 
-class EXEC:
+class Control_Function:
     def __init__(self):
         pass
+
     def execute(self, cmd):
         os.system(cmd)
 
@@ -14,7 +15,7 @@ class EXEC:
         self.execute("pkill raspivid")
 
 if __name__ == '__main__':
-    execute = EXEC()
-    #execute.openCamera()
-    execute.closeCamera()
+    functionControl = Function_Control()    # 功能控制（开关灯、开关摄像头....）
+    #functionControl.openCamera()
+    functionControl.closeCamera()
     
