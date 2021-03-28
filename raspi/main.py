@@ -14,6 +14,11 @@ def connect(sid, environ):
     print('connect ', sid)
 
 @sio.event
+def init(sid, data):
+    print('init ', data)
+    carControl.initCarControl(data)
+
+@sio.event
 def ctrl(sid, data):
     print('ctrl ', data)
     carControl.set(data)
