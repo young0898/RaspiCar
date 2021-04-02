@@ -6,10 +6,11 @@ import threading
 import numpy as np
 
 class Camera(threading.Thread):
-    def __init__(self):
+    def __init__(self, server_ip='127.0.0.1'):
         threading.Thread.__init__(self)
+        self.serverIp = server_ip
         self.isQuit = False
-        self.frame = np.zeros(480*640*3).reshape(480,640,3)
+        self.frame = np.zeros(480*640*3).reshape(480, 640, 3)
         self.fps = 0.0
         
         # 用于计算一个粗略的fps
@@ -46,7 +47,7 @@ class Camera(threading.Thread):
                 try:
                     # print('try 2 connect rtsp')
                     #camera = cv2.VideoCapture(0)
-                    camera = cv2.VideoCapture("tcp://192.168.31.203:12305")
+                    camera = cv2.VideoCapture("tcp://%s:12305" % self.serverIp)
                     self.camera = camera
                 except Exception as e:
                     print('Error:', e)
