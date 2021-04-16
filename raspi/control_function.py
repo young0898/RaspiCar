@@ -4,6 +4,25 @@ class Control_Function:
     def __init__(self):
         pass
 
+    def initWebServer(self):
+        cmd = "ps -aux |grep python3 | head -n1 | grep http.server | awk '{print$2}' | xargs -r kill -9"
+        self.execute(cmd)
+        cmd = "python3 -m http.server 8080 &"
+        self.execute(cmd)
+        print('初始化web服务')
+
+    def openWebServer(self):
+        cmd = "python3 -m http.server 8080 &"
+        self.execute(cmd)
+        print('开启web服务')
+
+    def closeWebServer(self):
+        cmd = "ps -aux |grep python3 | head -n1 | grep http.server | awk '{print$2}' | xargs -r kill -9"
+        self.execute(cmd)
+        print('关闭web服务')
+
+
+
     def execute(self, cmd):
         os.system(cmd)
 

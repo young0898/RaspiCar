@@ -1,0 +1,396 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>树莓派遥控小车</title>
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,
+		minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			background: rgba(175, 175, 175, 0.2);
+		}
+		.div1 {
+			width: 25px;
+			height: 50px;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 25px 0 0 25px;
+			position: absolute;
+			top: 50%;
+			left: 80%;
+			margin-left: -125px;
+			margin-top: -25PX;
+		}
+		.div2 {
+			width: 200px;
+			height: 50px;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 0%;
+			position: absolute;
+			top: 50%;
+			left: 80%;
+			margin-left: -100px;
+			margin-top: -25PX;
+		}
+		.div3 {
+			width: 25px;
+			height: 50px;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 0 25px 25px 0;
+			position: absolute;
+			top: 50%;
+			left: 80%;
+			margin-left: 100px;
+			margin-top: -25PX;
+		}
+		.smallcircle_X {
+			width: 50px;
+			height: 50px;
+			background: rgb(255, 255, 255);
+			border-radius: 100%;
+			position: absolute;
+			top: 50%;
+			left: 80%;
+			margin-left: -25px;
+			margin-top: -25px;
+		}
+		.bigcircle_X {
+			width: 200px;
+			height: 50px;
+			border-radius: 0%;
+			position: absolute;
+			top: 50%;
+			left: 80%;
+			margin-left: -100px;
+			margin-top: -25PX;
+		}
+
+		.div4 {
+			width: 50px;
+			height: 25px;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 25px 25px 0 0;
+			position: absolute;
+			top: 50%;
+			left: 15%;
+			margin-left: -25px;
+			margin-top: -125PX;
+		}
+		.div5 {
+			width: 50px;
+			height: 200px;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 0%;
+			position: absolute;
+			top: 50%;
+			left: 15%;
+			margin-left: -25px;
+			margin-top: -100PX;
+		}
+		.div6 {
+			width: 50px;
+			height: 25px;
+			background: rgba(0, 0, 0, 0.15);
+			border-radius: 0 0 25px 25px;
+			position: absolute;
+			top: 50%;
+			left: 15%;
+			margin-left: -25px;
+			margin-top: 100PX;
+		}
+		.smallcircle_Y {
+			width: 50px;
+			height: 50px;
+			background: rgb(255, 255, 255);
+			border-radius: 100%;
+			position: absolute;
+			top: 50%;
+			left: 15%;
+			margin-left: -25px;
+			margin-top: -25px;
+		}
+		.bigcircle_Y {
+			width: 50px;
+			height: 200px;
+			border-radius: 0%;
+			position: absolute;
+			top: 50%;
+			left: 15%;
+			margin-left: -25px;
+			margin-top: -100PX;
+		}
+
+	</style>
+</head>
+<body>
+	<div>
+		<input id='serverIP' type="text" placeholder="服务器IP" value="http://192.168.31.204:12306">
+    	<input id='connect' type="button" value="连接" autofocus="autofocus">
+    	<input id='disconnect' type="button" value="断开">
+		<button onclick="launchFullscreen(document.documentElement);">全屏</button>
+		<sapn id="content"></sapn>
+		&emsp;
+		<sapn id="x-value"></sapn>
+		<sapn> , </sapn>
+		<sapn id="y-value"></sapn>
+	</div>
+	<div class="div1"></div>
+	<div class="div2"></div>
+	<div class="div3"></div>
+	<div class="smallcircle_X"></div>
+	<div class="bigcircle_X"></div>
+
+	<div class="div4"></div>
+	<div class="div5"></div>
+	<div class="div6"></div>
+	<div class="smallcircle_Y"></div>
+	<div class="bigcircle_Y"></div>
+	<div style="position: absolute;top: 100%;height: 25px;margin-top: -25PX;">
+		<span>舵机修正:</span>
+		<input id='direction_add_value' type="text" value="0" style="width: 25px">
+		<span>&emsp;最大转向比例:</span>
+		<input id='direction_per_value' type="text" value="0.3" style="width: 25px">
+		<span>&emsp;舵机反向:</span>
+		<input id='direction_reverse_value' type="text" value="1" style="width: 25px">
+		<span>&emsp;电调修正:</span>
+		<input id='speed_add_value' type="text" value="-15" style="width: 25px">
+		<span>&emsp;最大速度比例:</span>
+		<input id='speed_per_value' type="text" value="1" style="width: 25px">
+		<span>&emsp;</span>
+    	<input id='carset' type="button" value="修改">
+	</div>
+
+
+	<script src="./socket.io.js"></script>
+	<script>
+		//全屏
+		function launchFullscreen(element) {
+			if (element.requestFullscreen) {
+				element.requestFullscreen();
+			} else if (element.mozRequestFullScreen) {
+				element.mozRequestFullScreen();
+			} else if (element.webkitRequestFullscreen) {
+				element.webkitRequestFullscreen();
+			} else if (element.msRequestFullscreen) {
+				element.msRequestFullscreen();
+			}
+    	}
+		function carSet() {
+			direction_add = Number(direction_add_value.value);
+			direction_per = Number(direction_per_value.value);
+			direction_reverse = Number(direction_reverse_value.value);
+			speed_add = Number(speed_add_value.value);
+			speed_per = Number(speed_per_value.value);
+			//console.log(direction_add)
+			if (socket) {
+                socket.emit('set', {
+                	'direction_add': direction_add,
+					'direction_per': direction_per,
+					'direction_reverse': direction_reverse,
+					'speed_add': speed_add,
+					'speed_per': speed_per
+                });
+            }
+		}
+
+        //var socket;
+        function connect() {
+			console.log("strat connect");
+            var url = serverIP.value
+            socket = io(url, {reconnection: false});
+
+            socket.on("connect", () => {
+                //alert("连接成功");
+				document.getElementById('content').innerHTML = "连接成功";
+                console.log(socket.id);
+            });
+
+            socket.on("disconnect", () => {
+                //alert("连接成功");
+				document.getElementById('content').innerHTML = "已断开";
+                console.log(socket.id);
+            });
+
+            socket.on("init", (data) => {
+                //alert("连接成功");
+				document.getElementById('direction_add_value').value = data.direction_add;
+				document.getElementById('direction_per_value').value = data.direction_per;
+				document.getElementById('direction_reverse_value').value = data.direction_reverse;
+				document.getElementById('speed_add_value').value = data.speed_add;
+				document.getElementById('speed_per_value').value = data.speed_per;
+                console.log(data);
+            });
+        }
+        function disconnect() {
+			if (socket) {
+                socket.close();
+            }
+		}
+
+
+    	//初始化方向摇杆的显示
+		function initX(){
+			vx = 0
+			smallcircle_X.style.left = '80%'
+			smallcircle_X.style.top = '50%'
+			document.getElementById('x-value').innerHTML = Math.round(vx).toString();
+			//console.log(vx + "  ,  " + vy);
+			output.x = parseInt(vx / r2 * 90);   //左右各90度
+			if (socket) {
+                socket.emit('ctrl', {'direction': Number(output.x), 'speed': Number(output.y)});
+            }
+		}
+		//初始化进退摇杆的显示
+		function initY(){
+			vy = 0
+			smallcircle_Y.style.left = '15%'
+			smallcircle_Y.style.top = '50%'
+			document.getElementById('y-value').innerHTML = Math.round(vy).toString();
+			//console.log(vx + "  ,  " + vy);
+			output.y = parseInt(vy / r2 * 100);  //前后各100%
+			if (socket) {
+                socket.emit('ctrl', {'direction': Number(output.x), 'speed': Number(output.y)});
+            }
+		}
+
+		function getX(poit_x){
+			d = poit_x - r2 + 1
+			if(d < (0 - r2)) {
+				vx = 0 - r2
+			} else if(d > r2) {
+				vx = r2
+			}else {
+				vx = d
+			}
+			smallcircle_X.style.left = bigcircle_X.offsetLeft + r2 + vx + 'px'
+			smallcircle_X.style.top = '50%'
+			document.getElementById('x-value').innerHTML = Math.round(vx).toString();
+			//console.log(Math.round(vx) + "  ,  " + Math.round(vy));
+			output.x = parseInt(vx / r2 * 90);   //左右各90度
+            if(lastX != output.x){
+				if (socket) {
+                	socket.emit('ctrl', {'direction': Number(output.x), 'speed': Number(output.y)});
+            	}
+				lastX = output.x
+			}
+		}
+
+		function getY(poit_y){
+			d = r2 - poit_y + 1
+			if(d < (0 - r2)) {
+				vy = 0 - r2
+			} else if(d > r2) {
+				vy = r2
+			}else {
+				vy = d
+			}
+			smallcircle_Y.style.left = '15%'
+			smallcircle_Y.style.top = bigcircle_Y.offsetTop + r2 - vy + 'px'
+			document.getElementById('y-value').innerHTML = Math.round(vy).toString();
+			//console.log(Math.round(vx) + "  ,  " + Math.round(vy));
+			output.y = parseInt(vy / r2 * 100);  //前后各100%
+			if(lastY != output.y){
+				if (socket) {
+                	socket.emit('ctrl', {'direction': Number(output.x), 'speed': Number(output.y)});
+            	}
+				lastY = output.y
+			}
+		}
+
+
+		let bigcircle_X = document.querySelector('.bigcircle_X')
+		let smallcircle_X = document.querySelector('.smallcircle_X')
+		let bigcircle_Y = document.querySelector('.bigcircle_Y')
+		let smallcircle_Y = document.querySelector('.smallcircle_Y')
+		let serverIP = document.getElementById('serverIP');
+        let btnconnect = document.getElementById('connect');
+        let btndisconnect = document.getElementById('disconnect');
+        let carset = document.getElementById('carset');
+        let direction_add_value = document.getElementById('direction_add_value');
+        let direction_per_value = document.getElementById('direction_per_value');
+        let direction_reverse_value = document.getElementById('direction_reverse_value');
+        let speed_add_value = document.getElementById('speed_add_value');
+        let speed_per_value = document.getElementById('speed_per_value');
+
+        btnconnect.onclick = connect;
+        btndisconnect.onclick = disconnect;
+        carset.onclick = carSet;
+
+		let r = 25		//小圆圈的半径
+		let r2 = 100	//大圆圈的半径
+		let mousedown_X = false;
+		let mousedown_Y = false;
+		let vx = 0
+		let vy = 0
+		let lastX = 0
+		let lastY = 0
+		let output = {x:0, y:0}; //方向X：-90~90，速度Y：-100~100
+		let socket;
+		initX()
+		initY()
+
+		/*-------适配手机------------*/
+		//当触摸屏幕时
+		bigcircle_X.ontouchstart = (e) => {
+			mousedown_X = true;
+			let t = e.targetTouches[0]
+			getX(t.pageX - bigcircle_X.offsetLeft)
+		}
+
+		bigcircle_X.ontouchmove = (e) => {
+			if(mousedown_X){
+				let t = e.targetTouches[0]
+				getX(t.pageX - bigcircle_X.offsetLeft)
+			}
+		}
+		bigcircle_X.ontouchend = () => {
+			mousedown_X = false;
+			initX()
+		}
+
+
+
+		bigcircle_Y.ontouchstart = (e) => {
+			mousedown_Y = true;
+			let t = e.targetTouches[0]
+			getY(t.pageY - bigcircle_Y.offsetTop)
+		}
+		bigcircle_Y.ontouchmove = (e) => {
+			if(mousedown_Y){
+				let t = e.targetTouches[0]
+				getY(t.pageY - bigcircle_Y.offsetTop)
+			}
+		}
+		bigcircle_Y.ontouchend = () => {
+			mousedown_Y = false;
+			initY()
+		}
+
+
+		/*-------适配电脑------------*/
+		//当鼠标按下时
+		/*
+		bigcircle_X.onmousedown = (e) => {
+			mousedown = true;
+			getX(e.offsetX)       //计算xy迁移量
+		}
+
+		bigcircle_X.onmousemove = (e) => {
+			if(mousedown){
+				getX(e.offsetX)
+			}
+		}
+		bigcircle_X.onmouseup = () => {
+			mousedown = false;
+			initX()
+		}
+*/
+
+	</script>
+</body>
+
+</html>
