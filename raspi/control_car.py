@@ -19,7 +19,9 @@ class Control_Car:
         self.direction_reverse = int(global_config.get('config', 'direction_reverse'))  # 方向反向
         self.speed_add = int(global_config.get('config', 'speed_add'))  # 前进后退修正
         self.speed_per = float(global_config.get('config', 'speed_per'))   # 速度比例100%
-        #print(self.speed_add)
+
+        self.last_direction = 0
+        self.last_speed = 0
 
     def initCarControl(self):
         direction = 0
@@ -30,28 +32,42 @@ class Control_Car:
         self.motor_pwm.start(self.motor_duty)
         self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
 
-    def setDirection(self, direction):
-        direction = (direction * self.direction_per + self.direction_add) * self.direction_reverse
-        if direction <= -90:
-            direction = -90
-        elif direction >= 90:
-            direction = 90
-        self.servo_duty = direction / 90 * 5 + 7.5
-        self.servo_pwm.ChangeDutyCycle(self.servo_duty)
-        #print("direction =", direction, "-> duty =", self.servo_duty, '%')
-        time.sleep(0.02)  # 等待控制周期结束
-        self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
 
-    def setSpeed(self, speed):
-        speed = speed * self.speed_per + self.speed_add
-        if speed <= -100:
-            speed = -100
-        elif speed >= 100:
-            speed = 100
-        self.motor_duty = speed / 100 * 2.5 + 7.5
-        self.motor_pwm.ChangeDutyCycle(self.motor_duty)
-        #print("speed =", speed)
-        #time.sleep(0.01)
+
+    def carCtrl(self, speed, direction):
+        if self.last_speed != speed:
+            newSpeed = speed * self.speed_per + self.speed_add
+            if newSpeed <= -100:
+                newSpeed = -100
+            elif newSpeed >= 100:
+                newSpeed = 100
+            self.motor_duty = newSpeed / 100 * 2.5 + 7.5
+            self.motor_pwm.ChangeDutyCycle(self.motor_duty)
+            self.last_speed = speed
+
+        if self.last_direction != direction:
+            newDirection = (direction * self.direction_per + self.direction_add) * self.direction_reverse
+            if newDirection <= -90:
+                newDirection = -90
+            elif newDirection >= 90:
+                newDirection = 90
+            self.servo_duty = newDirection / 90 * 5 + 7.5
+            self.servo_pwm.ChangeDutyCycle(self.servo_duty)
+            self.last_direction = direction
+
+        if direction == 0 and speed == 0:
+            #print("delay and ChangeDutyCycle = 0")
+            time.sleep(0.03)  # 等待控制周期结束
+            self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
+
+
+
+
+
+
+        # print("direction =", direction, "-> duty =", self.servo_duty, '%')
+        #time.sleep(0.02)  # 等待控制周期结束
+        #self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
 
     def setDirectionAdd(self, direction_add):
         self.direction_add = direction_add
@@ -77,10 +93,8 @@ class Control_Car:
 
 
     def ctrl(self, data):
-        if 'direction' in data:
-            self.setDirection(data['direction'])
-        if 'speed' in data:
-            self.setSpeed(data['speed'])
+        if 'speed' in data and 'direction' in data:
+            self.carCtrl(data['speed'], data['direction'])
 
     def set(self, data):
         if 'direction_add' in data:
@@ -94,3 +108,9 @@ class Control_Car:
         if 'speed_per' in data:
             self.setSpeedPer(data['speed_per'])
         self.initCarControl()
+
+    def carClose(self):
+        #self.initCarControl()
+        #self.motor_pwm.stop()
+        #self.servo_pwm.stop()
+        GPIO.cleanup()

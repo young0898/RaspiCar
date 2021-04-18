@@ -76,7 +76,7 @@
 			border-radius: 25px 25px 0 0;
 			position: absolute;
 			top: 50%;
-			left: 15%;
+			left: 10%;
 			margin-left: -25px;
 			margin-top: -125PX;
 		}
@@ -87,7 +87,7 @@
 			border-radius: 0%;
 			position: absolute;
 			top: 50%;
-			left: 15%;
+			left: 10%;
 			margin-left: -25px;
 			margin-top: -100PX;
 		}
@@ -98,7 +98,7 @@
 			border-radius: 0 0 25px 25px;
 			position: absolute;
 			top: 50%;
-			left: 15%;
+			left: 10%;
 			margin-left: -25px;
 			margin-top: 100PX;
 		}
@@ -109,7 +109,7 @@
 			border-radius: 100%;
 			position: absolute;
 			top: 50%;
-			left: 15%;
+			left: 10%;
 			margin-left: -25px;
 			margin-top: -25px;
 		}
@@ -119,7 +119,7 @@
 			border-radius: 0%;
 			position: absolute;
 			top: 50%;
-			left: 15%;
+			left: 10%;
 			margin-left: -25px;
 			margin-top: -100PX;
 		}
@@ -127,16 +127,25 @@
 	</style>
 </head>
 <body>
+	<div style="position: absolute;left: 50%; top: 50%; width: 480px; height: 320px; margin-top: -160px; margin-left: -240px;">
+		<img id='camera' style="max-height:100%; max-width:100%; overflow:hidden;"  src="./static/img/camera.jpg"/>
+	</div>
 	<div>
-		<input id='serverIP' type="text" placeholder="服务器IP" value="http://192.168.31.204:12306">
-    	<input id='connect' type="button" value="连接" autofocus="autofocus">
+		<!--<input id='serverIP' type="text" placeholder="服务器IP" value="192.168.31.204" style="width: 100px">-->
+    	<span>树莓派遥控小车</span>
+		<input id='connect' type="button" value="连接" autofocus="autofocus">
     	<input id='disconnect' type="button" value="断开">
 		<button onclick="launchFullscreen(document.documentElement);">全屏</button>
-		<sapn id="content"></sapn>
+		<input id='cameractrl' type="button" value="视频">
 		&emsp;
+		<input id='reboot' type="button" value="重启">
+		<input id='halt' type="button" value="关机">
 		<sapn id="x-value"></sapn>
 		<sapn> , </sapn>
 		<sapn id="y-value"></sapn>
+	</div>
+	<div>
+		<sapn id="content"></sapn>
 	</div>
 	<div class="div1"></div>
 	<div class="div2"></div>
@@ -149,6 +158,8 @@
 	<div class="div6"></div>
 	<div class="smallcircle_Y"></div>
 	<div class="bigcircle_Y"></div>
+
+
 	<div style="position: absolute;top: 100%;height: 25px;margin-top: -25PX;">
 		<span>舵机修正:</span>
 		<input id='direction_add_value' type="text" value="0" style="width: 25px">
@@ -165,8 +176,17 @@
 	</div>
 
 
-	<script src="./socket.io.js"></script>
+	<script src="./static/js/socket.io.js"></script>
 	<script>
+		function getServerIP() {
+			//获取当前网址
+			var curPath = window.document.location.host;
+			//获取主机地址
+			var localhostPaht = curPath.substring(0, curPath.indexOf(":"));
+			console.log (localhostPaht);
+			return(localhostPaht);
+		}
+
 		//全屏
 		function launchFullscreen(element) {
 			if (element.requestFullscreen) {
@@ -197,22 +217,36 @@
             }
 		}
 
+		function cameractrl() {
+			if(!cameraFlat){
+				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_feed";
+				cameraFlat = 1
+			}
+			else{
+				document.getElementById('camera').src="./static/img/camera.jpg"
+				cameraFlat = 0
+			}
+		}
+
         //var socket;
         function connect() {
-			console.log("strat connect");
-            var url = serverIP.value
-            socket = io(url, {reconnection: false});
+			if(!socket){
+				console.log("strat connect");
+            	var url = "http://" + getServerIP() + ':12306'
+            	socket = io(url, {reconnection: false});
+			}
 
             socket.on("connect", () => {
                 //alert("连接成功");
 				document.getElementById('content').innerHTML = "连接成功";
+				launchFullscreen(document.documentElement);
                 console.log(socket.id);
             });
 
             socket.on("disconnect", () => {
-                //alert("连接成功");
 				document.getElementById('content').innerHTML = "已断开";
                 console.log(socket.id);
+                socket = null;
             });
 
             socket.on("init", (data) => {
@@ -228,6 +262,16 @@
         function disconnect() {
 			if (socket) {
                 socket.close();
+            }
+		}
+		function reboot() {
+			if (socket) {
+                socket.emit('exec', {'cmd': 'sudo reboot'});
+            }
+		}
+		function halt() {
+			if (socket) {
+                socket.emit('exec', {'cmd': 'sudo halt'});
             }
 		}
 
@@ -247,7 +291,7 @@
 		//初始化进退摇杆的显示
 		function initY(){
 			vy = 0
-			smallcircle_Y.style.left = '15%'
+			smallcircle_Y.style.left = '10%'
 			smallcircle_Y.style.top = '50%'
 			document.getElementById('y-value').innerHTML = Math.round(vy).toString();
 			//console.log(vx + "  ,  " + vy);
@@ -288,7 +332,7 @@
 			}else {
 				vy = d
 			}
-			smallcircle_Y.style.left = '15%'
+			smallcircle_Y.style.left = '10%'
 			smallcircle_Y.style.top = bigcircle_Y.offsetTop + r2 - vy + 'px'
 			document.getElementById('y-value').innerHTML = Math.round(vy).toString();
 			//console.log(Math.round(vx) + "  ,  " + Math.round(vy));
@@ -306,9 +350,12 @@
 		let smallcircle_X = document.querySelector('.smallcircle_X')
 		let bigcircle_Y = document.querySelector('.bigcircle_Y')
 		let smallcircle_Y = document.querySelector('.smallcircle_Y')
-		let serverIP = document.getElementById('serverIP');
+		//let serverIP = document.getElementById('serverIP');
         let btnconnect = document.getElementById('connect');
         let btndisconnect = document.getElementById('disconnect');
+        let btnreboot = document.getElementById('reboot');
+        let btnbalt = document.getElementById('halt');
+        let btncameractrl = document.getElementById('cameractrl');
         let carset = document.getElementById('carset');
         let direction_add_value = document.getElementById('direction_add_value');
         let direction_per_value = document.getElementById('direction_per_value');
@@ -318,6 +365,9 @@
 
         btnconnect.onclick = connect;
         btndisconnect.onclick = disconnect;
+        btnreboot.onclick = reboot;
+        btnbalt.onclick = halt;
+        btncameractrl.onclick = cameractrl;
         carset.onclick = carSet;
 
 		let r = 25		//小圆圈的半径
@@ -329,9 +379,15 @@
 		let lastX = 0
 		let lastY = 0
 		let output = {x:0, y:0}; //方向X：-90~90，速度Y：-100~100
-		let socket;
+		let socket = null;
+		let cameraFlat = 0;
 		initX()
 		initY()
+		connect()
+
+
+
+
 
 		/*-------适配手机------------*/
 		//当触摸屏幕时

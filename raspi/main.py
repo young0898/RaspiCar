@@ -4,13 +4,15 @@ from control_car import Control_Car
 from control_function import Control_Function
 import get_ip
 
+print('初始化socketio服务')
 sio = socketio.Server(cors_allowed_origins="*")    #1 创建socketio服务器
 app = socketio.WSGIApp(sio)   #2 创建应用
 
 carControl = Control_Car()   # 实例化车辆控制（舵机和电调）
 carControl.initCarControl()
 functionControl = Control_Function()  # 实例化功能控制（开关灯、开关摄像头....）
-functionControl.initWebServer()  # 初始化web服务
+#functionControl.initWebServer()  # 初始化web服务
+functionControl.initFlask()   # 初始化Flask web服务
 
 @sio.event
 def connect(sid, environ):
@@ -39,7 +41,7 @@ def set(sid, data):
 @sio.event
 def ping(sid, data):
     #print('ping', data)
-    sio.emit('ping', data) #啥都不做，直接转发原data回去
+    sio.emit('ping', data)
 
 @sio.event
 def exec(sid, data):
@@ -49,6 +51,7 @@ def exec(sid, data):
 @sio.event
 def disconnect(sid):
     print('disconnect ', sid)
+    carControl.carClose()
 
 if __name__ == '__main__':
     ip = get_ip.getIp()

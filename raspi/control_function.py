@@ -1,5 +1,6 @@
 import os
 
+
 class Control_Function:
     def __init__(self):
         pass
@@ -10,6 +11,13 @@ class Control_Function:
         cmd = "python3 -m http.server 8080 &"
         self.execute(cmd)
         print('初始化web服务')
+
+    def initFlask(self):
+        cmd = "ps -aux |grep python3 | head -n1 | grep flask_webServer | awk '{print$2}' | xargs -r kill -9"
+        self.execute(cmd)
+        cmd = "python3 flask_webServer.py &"
+        self.execute(cmd)
+        print('初始化Flask web服务')
 
     def openWebServer(self):
         cmd = "python3 -m http.server 8080 &"
