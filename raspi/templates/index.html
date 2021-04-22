@@ -183,7 +183,7 @@
 			var curPath = window.document.location.host;
 			//获取主机地址
 			var localhostPaht = curPath.substring(0, curPath.indexOf(":"));
-			console.log (localhostPaht);
+			//console.log (localhostPaht);
 			return(localhostPaht);
 		}
 
@@ -218,14 +218,16 @@
 		}
 
 		function cameractrl() {
-			if(!cameraFlat){
+			if(cameraFlat == 0){
 				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_start";
 				cameraFlat = 1
+				console.log("cameraFlat=1");
 			}
 			else{
-				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_stop";
-				//document.getElementById('camera').src="./static/img/camera.jpg"
+				//document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_stop";
+				document.getElementById('camera').src="./static/img/camera.jpg"
 				cameraFlat = 0
+				console.log("cameraFlat=0");
 			}
 		}
 

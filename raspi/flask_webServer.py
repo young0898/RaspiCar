@@ -4,6 +4,7 @@ import get_ip
 import threading
 import numpy as np
 import time
+import sys
 
 class VideoCamera(threading.Thread):
     def __init__(self):
@@ -18,18 +19,22 @@ class VideoCamera(threading.Thread):
         self.video.release()
 
     def run(self):
-        while True:
-            success, image = self.video.read()
-            if success:
-                image = image[::-1, ::-1, :]  # 翻转图片
-                # 因为opencv读取的图片并非jpeg格式，因此要用motion JPEG模式需要先将图片转码成jpg格式图片
-                ret, frame = cv2.imencode('.jpg', image)
-                #self.frame = frame
-                self.frame = frame.tobytes()
-                #print(time.time()*1000, "put_frame")
+        while self.camera_flag:
+            try:
+                success, image = self.video.read()
+                if success:
+                    image = image[::-1, ::-1, :]  # 翻转图片
+                    # 因为opencv读取的图片并非jpeg格式，因此要用motion JPEG模式需要先将图片转码成jpg格式图片
+                    ret, frame = cv2.imencode('.jpg', image)
+                    #self.frame = frame
+                    self.frame = frame.tobytes()
+                    #print(time.time()*1000, "put_frame")
 
-        frame = np.ones(480 * 640 * 3).reshape(480, 640, 3)
-        self.frame = frame.tobytes()
+            except KeyboardInterrupt:
+                print('received an ^C and exit.')
+                self.camera_flag = False
+                #sys.exit(0)
+
 
 
 def gen(camera):
@@ -61,7 +66,7 @@ def video_start():
 @app.route('/video_stop')
 def video_stop():
     print('stopVideo')
-    camera.camera_flag = False
+    #camera.camera_flag = False
     print(camera.camera_flag)
     return Response(gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 

@@ -98,7 +98,7 @@ class Control_Car:
 
     def __del__(self):
         print("__del__")
-        #self.initCarControl()
+        self.initCarControl()
         #self.motor_pwm.stop()
         #self.servo_pwm.stop()
-        GPIO.cleanup()
+        #GPIO.cleanup()
