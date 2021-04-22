@@ -16,13 +16,17 @@ functionControl.initFlask()   # 初始化Flask web服务
 
 @sio.event
 def connect(sid, environ):
-    print('connect ', sid)
+    print('客户端连接成功，id: ', sid)
     carControl.initCarControl()
     sio.emit('init', {'direction_add': carControl.direction_add,
                     'direction_per': carControl.direction_per,
                     'direction_reverse': carControl.direction_reverse,
                     'speed_add': carControl.speed_add,
                     'speed_per': carControl.speed_per})
+
+@sio.event
+def disconnect(sid):
+    print('客户端断开，id: ', sid)
 
 @sio.event
 def init(sid, data):
@@ -48,10 +52,6 @@ def ping(sid, data):
 def exec(sid, data):
     print('exec ', data)
     functionControl.execute(data['cmd'])
-
-@sio.event
-def disconnect(sid):
-    print('disconnect ', sid)
 
 if __name__ == '__main__':
     ip = get_ip.getIp()

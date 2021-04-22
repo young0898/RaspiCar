@@ -30,9 +30,8 @@ class Control_Car:
         self.motor_duty = (speed * self.speed_per + self.speed_add) / 100 * 2.5 + 7.5   # 占空比  1ms 5%,  1.5ms 7.5%   2ms 10%
         self.servo_pwm.start(self.servo_duty)
         self.motor_pwm.start(self.motor_duty)
+        time.sleep(0.03)  # 等待控制周期结束
         self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
-
-
 
     def carCtrl(self, speed, direction):
         if self.last_speed != speed:
@@ -60,15 +59,6 @@ class Control_Car:
             time.sleep(0.03)  # 等待控制周期结束
             self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
 
-
-
-
-
-
-        # print("direction =", direction, "-> duty =", self.servo_duty, '%')
-        #time.sleep(0.02)  # 等待控制周期结束
-        #self.servo_pwm.ChangeDutyCycle(0)  # 清空占空比，这句是防抖关键句，如果没有这句，舵机会狂抖不止
-
     def setDirectionAdd(self, direction_add):
         self.direction_add = direction_add
         global_config.set('config', 'direction_add', str(self.direction_add))
@@ -88,9 +78,6 @@ class Control_Car:
     def setSpeedPer(self, speed_per):
         self.speed_per = speed_per
         global_config.set('config', 'speed_per', str(self.speed_per))
-
-
-
 
     def ctrl(self, data):
         if 'speed' in data and 'direction' in data:
