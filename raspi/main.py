@@ -17,6 +17,7 @@ functionControl.initFlask()   # 初始化Flask web服务
 @sio.event
 def connect(sid, environ):
     print('connect ', sid)
+    carControl.initCarControl()
     sio.emit('init', {'direction_add': carControl.direction_add,
                     'direction_per': carControl.direction_per,
                     'direction_reverse': carControl.direction_reverse,
@@ -51,7 +52,6 @@ def exec(sid, data):
 @sio.event
 def disconnect(sid):
     print('disconnect ', sid)
-    carControl.carClose()
 
 if __name__ == '__main__':
     ip = get_ip.getIp()

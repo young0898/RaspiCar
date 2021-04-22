@@ -109,7 +109,8 @@ class Control_Car:
             self.setSpeedPer(data['speed_per'])
         self.initCarControl()
 
-    def carClose(self):
+    def __del__(self):
+        print("__del__")
         #self.initCarControl()
         #self.motor_pwm.stop()
         #self.servo_pwm.stop()

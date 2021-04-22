@@ -219,11 +219,12 @@
 
 		function cameractrl() {
 			if(!cameraFlat){
-				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_feed";
+				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_start";
 				cameraFlat = 1
 			}
 			else{
-				document.getElementById('camera').src="./static/img/camera.jpg"
+				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_stop";
+				//document.getElementById('camera').src="./static/img/camera.jpg"
 				cameraFlat = 0
 			}
 		}
@@ -239,7 +240,7 @@
             socket.on("connect", () => {
                 //alert("连接成功");
 				document.getElementById('content').innerHTML = "连接成功";
-				launchFullscreen(document.documentElement);
+				//launchFullscreen(document.documentElement);
                 console.log(socket.id);
             });
 
