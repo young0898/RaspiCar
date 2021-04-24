@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 class Control_Function:
@@ -15,7 +16,8 @@ class Control_Function:
     def initFlask(self):
         cmd = "ps -aux |grep python3 | head -n1 | grep flask_webServer | awk '{print$2}' | xargs -r kill -9"
         self.execute(cmd)
-        cmd = "python3 flask_webServer.py &"
+        filePath = sys.path[0]
+        cmd = "python3 " + filePath + "/flask_webServer.py &"
         self.execute(cmd)
         print('初始化Flask web服务')
 

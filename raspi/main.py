@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import eventlet   # eventlet包提供了协程的支持
 import socketio
 from control_car import Control_Car

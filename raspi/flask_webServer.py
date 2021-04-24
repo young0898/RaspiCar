@@ -12,14 +12,15 @@ class VideoCamera(threading.Thread):
         # 通过opencv获取实时视频流
         self.video = cv2.VideoCapture(0)
         self.video.set(cv2.CAP_PROP_FPS, 30)
+        self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.frame = np.ones(480 * 640 * 3).reshape(480, 640, 3)
-        self.camera_flag = True
 
     def __del__(self):
         self.video.release()
 
     def run(self):
-        while self.camera_flag:
+        while True:
             try:
                 success, image = self.video.read()
                 if success:
@@ -30,15 +31,13 @@ class VideoCamera(threading.Thread):
                     self.frame = frame.tobytes()
                     #print(time.time()*1000, "put_frame")
 
-            except KeyboardInterrupt:
-                print('received an ^C and exit.')
-                self.camera_flag = False
-                #sys.exit(0)
+            except BaseException as e:
+                print(e)
 
 
 
 def gen(camera):
-    while camera.camera_flag:
+    while True:
         #print(time.time()*1000,"get_frame------->")
         time.sleep(0.035)
         frame = camera.frame
@@ -58,17 +57,9 @@ def index():
 @app.route('/video_start')  # 这个地址返回视频流响应
 def video_start():
     print('startVideo')
-    camera.camera_flag = True
-    print(camera.camera_flag)
     return Response(gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
     #return Response(gen(Camera()), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/video_stop')
-def video_stop():
-    print('stopVideo')
-    #camera.camera_flag = False
-    print(camera.camera_flag)
-    return Response(gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     ip = get_ip.getIp()

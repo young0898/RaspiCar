@@ -127,7 +127,8 @@
 	</style>
 </head>
 <body>
-	<div style="position: absolute;left: 50%; top: 50%; width: 480px; height: 320px; margin-top: -160px; margin-left: -240px;">
+	<div id='imgDisplay' align="center" style="position: absolute; display: none;"> <!---->
+		<!--<canvas id="canvas" width="480" height="320" style="border: 1px solid #888;"></canvas>-->
 		<img id='camera' style="max-height:100%; max-width:100%; overflow:hidden;"  src="./static/img/camera.jpg"/>
 	</div>
 	<div>
@@ -144,6 +145,7 @@
 		<sapn> , </sapn>
 		<sapn id="y-value"></sapn>
 	</div>
+
 	<div>
 		<sapn id="content"></sapn>
 	</div>
@@ -219,15 +221,23 @@
 
 		function cameractrl() {
 			if(cameraFlat == 0){
+				imgDisplay.style.left = '50%';
+				imgDisplay.style.marginLeft = '-'+(Number(window.screen.width)*0.4).toString()+'px'; //"width: 640px; height: 400px; margin-top: -160px; margin-left: 0px;";
+				imgDisplay.style.top = '25px';
+				imgDisplay.style.width = (Number(window.screen.width)*0.8).toString()+'px';
+				imgDisplay.style.height = '85%';
+				imgDisplay.style.display = 'block';
 				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_start";
 				cameraFlat = 1
 				console.log("cameraFlat=1");
+
 			}
 			else{
 				//document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_stop";
 				document.getElementById('camera').src="./static/img/camera.jpg"
 				cameraFlat = 0
 				console.log("cameraFlat=0");
+				imgDisplay.style.display = 'none';
 			}
 		}
 
@@ -324,6 +334,7 @@
             	}
 				lastX = output.x
 			}
+            //console.log(output.x)
 		}
 
 		function getY(poit_y){
@@ -365,6 +376,9 @@
         let direction_reverse_value = document.getElementById('direction_reverse_value');
         let speed_add_value = document.getElementById('speed_add_value');
         let speed_per_value = document.getElementById('speed_per_value');
+		let imgDisplay = document.getElementById('imgDisplay');
+		//imgDisplay.style
+
 
         btnconnect.onclick = connect;
         btndisconnect.onclick = disconnect;
@@ -401,12 +415,13 @@
 		}
 
 		bigcircle_X.ontouchmove = (e) => {
+			e.preventDefault();//触摸时浏览器有个默认的事件，这个事件会阻断你的所有操作。所以在操作之前要先把默认事件除掉
 			if(mousedown_X){
 				let t = e.targetTouches[0]
 				getX(t.pageX - bigcircle_X.offsetLeft)
 			}
 		}
-		bigcircle_X.ontouchend = () => {
+		bigcircle_X.ontouchend = (e) => {
 			mousedown_X = false;
 			initX()
 		}
@@ -419,6 +434,7 @@
 			getY(t.pageY - bigcircle_Y.offsetTop)
 		}
 		bigcircle_Y.ontouchmove = (e) => {
+			e.preventDefault();//触摸时浏览器有个默认的事件，这个事件会阻断你的所有操作。所以在操作之前要先把默认事件除掉
 			if(mousedown_Y){
 				let t = e.targetTouches[0]
 				getY(t.pageY - bigcircle_Y.offsetTop)
