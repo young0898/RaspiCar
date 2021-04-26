@@ -225,7 +225,7 @@
 				imgDisplay.style.marginLeft = '-'+(Number(window.screen.width)*0.4).toString()+'px'; //"width: 640px; height: 400px; margin-top: -160px; margin-left: 0px;";
 				imgDisplay.style.top = '25px';
 				imgDisplay.style.width = (Number(window.screen.width)*0.8).toString()+'px';
-				imgDisplay.style.height = '85%';
+				imgDisplay.style.height = (Number(window.screen.height)-50).toString()+'px';
 				imgDisplay.style.display = 'block';
 				document.getElementById('camera').src = "http://" + getServerIP() + ":8080/video_start";
 				cameraFlat = 1
