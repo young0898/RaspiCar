@@ -5,6 +5,7 @@ import threading
 import numpy as np
 import time
 import sys
+from logger import logger
 
 class VideoCamera(threading.Thread):
     def __init__(self):
@@ -20,6 +21,7 @@ class VideoCamera(threading.Thread):
         self.video.release()
 
     def run(self):
+        logger.info("camera start")
         while True:
             try:
                 success, image = self.video.read()
@@ -33,6 +35,7 @@ class VideoCamera(threading.Thread):
 
             except BaseException as e:
                 print(e)
+                logger.error("【OA登录】验证cookies发生异常", e)
 
 
 
@@ -49,6 +52,8 @@ def gen(camera):
 app = Flask(__name__)
 camera = VideoCamera()
 camera.start()
+
+
 
 @app.route('/')
 def index():
